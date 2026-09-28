@@ -131,7 +131,12 @@
     color: #7c3aed;
   }
 
-  .an {
+  /* Annotations give way before names do. */
+  .code > .an {
+    flex: 0 1000 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: #0d9488;
   }
 

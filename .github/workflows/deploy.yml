@@ -1,0 +1,19 @@
+name: Deploy to Hugging Face
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Needs an HF_TOKEN repository secret with write access to the Space.
+    if: github.repository == 'cfahlgren1/parquet-xray'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv tool install huggingface_hub
+      - run: ./scripts/deploy-space.sh
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}

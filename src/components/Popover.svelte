@@ -21,8 +21,10 @@
   $effect(() => {
     if (!popover || !box) return;
     const { width, height } = box.getBoundingClientRect();
-    left = Math.min(popover.x + GAP, innerWidth - width - MARGIN);
-    top = popover.y + GAP + 4 + height > innerHeight ? popover.y - height - MARGIN : popover.y + GAP + 4;
+    // clientWidth excludes the scrollbar gutter, which innerWidth counts.
+    const { clientWidth, clientHeight } = document.documentElement;
+    left = Math.min(popover.x + GAP, clientWidth - width - MARGIN);
+    top = popover.y + GAP + 4 + height > clientHeight ? popover.y - height - MARGIN : popover.y + GAP + 4;
   });
 </script>
 

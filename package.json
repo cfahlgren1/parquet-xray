@@ -14,7 +14,8 @@
     "format": "prettier --write . && eslint --fix .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "verify": "npm run lint && npm run check && npm test && npm run build"
+    "verify": "npm run lint && npm run check && npm test && npm run build",
+    "screenshots": "npm run build && node scripts/screenshots.ts"
   },
   "dependencies": {
     "hyparquet": "1.31.2"

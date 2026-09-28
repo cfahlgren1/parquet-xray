@@ -1,0 +1,15 @@
+# Hugging Face Space settings. scripts/deploy-space.sh puts these at the top of the Space's README.
+title: Parquet X-ray
+emoji: 🔬
+colorFrom: indigo
+colorTo: gray
+sdk: static
+app_build_command: npm run build
+app_file: dist/index.html
+pinned: false
+license: apache-2.0
+short_description: See how a Parquet file is laid out, byte by byte
+tags:
+  - parquet
+  - visualization
+  - hyparquet
