@@ -29,98 +29,35 @@
 </script>
 
 {#if popover && content}
-  <div class="popover" bind:this={box} style:left="{left}px" style:top="{top}px" role="tooltip">
-    <div class="title">
-      <span class="swatch" style:background={pieceColor(popover.piece, inspector.selectedLeaf)}></span>
+  <div
+    class="pointer-events-none fixed z-30 w-80 rounded-xl border border-solid border-line bg-surface px-[13px] pt-[11px] pb-3 shadow-pop compact:top-auto! compact:right-2 compact:bottom-2 compact:left-2! compact:w-auto"
+    bind:this={box}
+    style:left="{left}px"
+    style:top="{top}px"
+    role="tooltip"
+  >
+    <div class="flex items-center gap-[7px] font-semibold">
+      <span
+        class="inline-block size-2.5 flex-none rounded-[2px]"
+        style:background={pieceColor(popover.piece, inspector.selectedLeaf)}
+      ></span>
       {content.title}
     </div>
-    {#if content.column}<div class="column mono">{content.column}</div>{/if}
-    <div class="where mono">{content.where}</div>
-    <p class="what">{content.what}</p>
-    <dl>
+    {#if content.column}<div class="mt-[3px] ml-[17px] font-mono text-[12px] [overflow-wrap:anywhere]">
+        {content.column}
+      </div>{/if}
+    <div class="mt-px mb-1.5 ml-[17px] font-mono text-[11.5px] text-subtle">{content.where}</div>
+    <p class="mt-0 mb-2 text-[12px] text-secondary">{content.what}</p>
+    <dl class="m-0 grid grid-cols-[88px_minmax(0,1fr)] gap-x-2 gap-y-[3px] text-[12px]">
       {#each content.rows as [label, value] (label)}
-        <dt>{label}</dt>
-        <dd class="mono">{value}</dd>
+        <dt class="text-faint">{label}</dt>
+        <dd class="m-0 truncate font-mono">{value}</dd>
       {/each}
     </dl>
     {#if hintRg !== null}
-      <div class="hint">Click to {inspector.selectedRg === hintRg ? "close" : "open"} row_group[{hintRg}]</div>
+      <div class="mt-2 border-0 border-t border-solid border-line-soft pt-[7px] text-[11.5px] text-faint">
+        Click to {inspector.selectedRg === hintRg ? "close" : "open"} row_group[{hintRg}]
+      </div>
     {/if}
   </div>
 {/if}
-
-<style>
-  .popover {
-    position: fixed;
-    z-index: 30;
-    width: 320px;
-    padding: 11px 13px 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    background: var(--surface);
-    box-shadow: var(--shadow-pop);
-    pointer-events: none;
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-weight: 600;
-  }
-
-  .column {
-    margin: 3px 0 0 17px;
-    font-size: 12px;
-    overflow-wrap: anywhere;
-  }
-
-  .where {
-    margin: 1px 0 6px 17px;
-    font-size: 11.5px;
-    color: var(--text-3);
-  }
-
-  .what {
-    margin: 0 0 8px;
-    font-size: 12px;
-    color: var(--text-2);
-  }
-
-  dl {
-    display: grid;
-    grid-template-columns: 88px minmax(0, 1fr);
-    gap: 3px 8px;
-    margin: 0;
-    font-size: 12px;
-  }
-
-  dt {
-    color: var(--text-4);
-  }
-
-  dd {
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .hint {
-    margin-top: 8px;
-    padding-top: 7px;
-    border-top: 1px solid var(--line-soft);
-    font-size: 11.5px;
-    color: var(--text-4);
-  }
-
-  @media (max-width: 700px) {
-    .popover {
-      top: auto !important;
-      right: 8px;
-      bottom: 8px;
-      left: 8px !important;
-      width: auto;
-    }
-  }
-</style>

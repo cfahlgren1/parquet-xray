@@ -9,22 +9,26 @@
   const inspector = getInspector();
   const { model } = inspector;
   const lines = schemaLines(model.metadata);
+  const lineClass =
+    "grid grid-cols-[30px_minmax(0,1fr)_130px] items-center w-full h-6 p-0 border-0 text-left compact:grid-cols-[26px_minmax(0,1fr)_64px]";
   const totalBytes = model.leafBytes.reduce((a, b) => a + b, 0);
 </script>
 
 <section>
   <h2>Schema <small>size on disk · click a column to find it in the file</small></h2>
-  <div class="schema mono">
+  <div class="rounded-lg bg-surface-alt py-1.5 font-mono text-[12.5px] outline outline-line outline-solid">
     {#each lines as line, n (n)}
       {@const leaf = line.leaf}
       {#if leaf === undefined}
-        <div class="line">
-          <span class="n">{n + 1}</span>
-          <span class="code" style:padding-left="{line.depth * 2}ch">
-            {#if line.keyword}<span class="kw">{line.keyword}&nbsp;</span>{/if}
-            {#if line.name}<ColumnName name={line.name} />{/if}
-            {#if line.annotation}<span class="an">{line.annotation}</span>{/if}
-            <span
+        <div class={[lineClass, "bg-transparent"]}>
+          <span class="pr-2.5 text-right text-[#d1d5db]">{n + 1}</span>
+          <span class="flex min-w-0 overflow-hidden pr-3 whitespace-pre" style:padding-left="{line.depth * 2}ch">
+            {#if line.keyword}<span class="flex-none text-[#e11d48]">{line.keyword}&nbsp;</span>{/if}
+            {#if line.name}<ColumnName class="font-semibold" name={line.name} />{/if}
+            {#if line.annotation}<span class="min-w-0 flex-[0_1000_auto] overflow-hidden text-ellipsis text-[#0d9488]"
+                >{line.annotation}</span
+              >{/if}
+            <span class="flex-none"
               >{#if line.punct !== "}"}&nbsp;{/if}{line.punct}</span
             >
           </span>
@@ -34,24 +38,37 @@
         {@const bytes = model.leafBytes[leaf] ?? 0}
         <button
           type="button"
-          class="line leaf"
+          class={[
+            lineClass,
+            "cursor-pointer hover:bg-accent-soft",
+            inspector.selectedLeaf === leaf ? "bg-accent-soft shadow-[inset_3px_0_0_#818cf8]" : "bg-transparent",
+          ]}
           aria-label="Column {model.leaves[leaf]?.path}, {formatBytes(bytes)}"
           aria-pressed={inspector.selectedLeaf === leaf}
-          class:selected={inspector.selectedLeaf === leaf}
           onclick={() => inspector.toggleLeaf(leaf)}
         >
-          <span class="n">{n + 1}</span>
-          <span class="code" style:padding-left="{line.depth * 2}ch">
-            <span class="kw" class:optional={line.keyword === "optional"}>{line.keyword}&nbsp;</span>
-            <span class="ty">{line.type}&nbsp;</span>
-            <ColumnName name={line.name ?? ""} />
-            {#if line.annotation}<span class="an">{line.annotation}</span>{/if}
-            <span>;</span>
+          <span class="pr-2.5 text-right text-[#d1d5db]">{n + 1}</span>
+          <span class="flex min-w-0 overflow-hidden pr-3 whitespace-pre" style:padding-left="{line.depth * 2}ch">
+            <span class={["flex-none text-[#e11d48]", line.keyword === "optional" && "compact:hidden"]}
+              >{line.keyword}&nbsp;</span
+            >
+            <span class="flex-none text-[#7c3aed]">{line.type}&nbsp;</span>
+            <ColumnName class="font-semibold" name={line.name ?? ""} />
+            {#if line.annotation}<span class="min-w-0 flex-[0_1000_auto] overflow-hidden text-ellipsis text-[#0d9488]"
+                >{line.annotation}</span
+              >{/if}
+            <span class="flex-none">;</span>
           </span>
-          <span class="size">
-            <span class="bar"><span style:width="{(bytes / totalBytes) * 100}%" style:background={color}></span></span>
-            <span class="swatch" style:background={color}></span>
-            <span class="value">{formatBytes(bytes)}</span>
+          <span class="flex items-center gap-2 pr-3 text-[11px] text-faint">
+            <span class="relative h-1 flex-1 rounded-[1px] bg-[#eceef2] compact:hidden"
+              ><span
+                class="absolute inset-y-0 left-0 min-w-px rounded-[1px]"
+                style:width="{(bytes / totalBytes) * 100}%"
+                style:background={color}
+              ></span></span
+            >
+            <span class="hidden size-2 flex-none rounded-[2px] compact:block" style:background={color}></span>
+            <span class="w-15 text-right whitespace-nowrap compact:w-auto">{formatBytes(bytes)}</span>
           </span>
         </button>
         {#if inspector.selectedLeaf === leaf}
@@ -61,137 +78,3 @@
     {/each}
   </div>
 </section>
-
-<style>
-  .schema {
-    padding: 6px 0;
-    border-radius: var(--radius);
-    outline: 1px solid var(--line);
-    background: var(--surface-2);
-    font-size: 12.5px;
-  }
-
-  .line {
-    display: grid;
-    grid-template-columns: 30px minmax(0, 1fr) 130px;
-    align-items: center;
-    width: 100%;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    text-align: left;
-  }
-
-  .leaf {
-    cursor: pointer;
-  }
-
-  .leaf:hover,
-  .selected {
-    background: var(--accent-soft);
-  }
-
-  .selected {
-    box-shadow: inset 3px 0 0 #818cf8;
-  }
-
-  .n {
-    padding-right: 10px;
-    color: #d1d5db;
-    text-align: right;
-  }
-
-  .code {
-    display: flex;
-    min-width: 0;
-    padding-right: 12px;
-    overflow: hidden;
-    white-space: pre;
-  }
-
-  .code > :global(*) {
-    flex: none;
-  }
-
-  .code > :global(.name) {
-    flex: 0 1 auto;
-  }
-
-  .code :global(.name) {
-    font-weight: 600;
-  }
-
-  .kw {
-    color: #e11d48;
-  }
-
-  .ty {
-    color: #7c3aed;
-  }
-
-  /* Annotations give way before names do. */
-  .code > .an {
-    flex: 0 1000 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #0d9488;
-  }
-
-  .size {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-right: 12px;
-    font-size: 11px;
-    color: var(--text-4);
-  }
-
-  .bar {
-    position: relative;
-    flex: 1;
-    height: 4px;
-    border-radius: 1px;
-    background: #eceef2;
-  }
-
-  .bar > span {
-    position: absolute;
-    inset: 0 auto 0 0;
-    min-width: 1px;
-    border-radius: 1px;
-  }
-
-  .size .swatch {
-    display: none;
-    width: 8px;
-    height: 8px;
-  }
-
-  .value {
-    width: 60px;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 700px) {
-    /* Nearly every column is optional; on phones the room is better spent on the name. */
-    .kw.optional {
-      display: none;
-    }
-    .line {
-      grid-template-columns: 26px minmax(0, 1fr) 64px;
-    }
-    .bar {
-      display: none;
-    }
-    .size .swatch {
-      display: block;
-    }
-    .value {
-      width: auto;
-    }
-  }
-</style>

@@ -22,35 +22,13 @@
 
 <svelte:document onclick={() => inspector.hidePopover()} />
 
-<main>
+<main class="mt-4.5 grid grid-cols-1 gap-4.5">
   <FileSummary />
   <FileMap />
-  <div class="columns">
+  <div class="grid grid-cols-2 items-start gap-4.5 stacked:grid-cols-1">
     <Schema />
     <RowGroups />
   </div>
 </main>
 
 <Popover />
-
-<style>
-  main {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    margin-top: 18px;
-  }
-
-  .columns {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 18px;
-    align-items: start;
-  }
-
-  @media (max-width: 900px) {
-    .columns {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-</style>

@@ -104,31 +104,13 @@
   }
 </script>
 
-<div class="frame" bind:clientWidth={width} bind:clientHeight={height}>
-  <canvas bind:this={canvas} class:clickable={!!onpick} aria-label={label} {onpointermove} {onpointerleave} {onclick}
+<div class="h-10 compact:h-9" bind:clientWidth={width} bind:clientHeight={height}>
+  <canvas
+    bind:this={canvas}
+    class={["block size-full rounded-[3px]", onpick ? "cursor-pointer" : "cursor-crosshair"]}
+    aria-label={label}
+    {onpointermove}
+    {onpointerleave}
+    {onclick}
   ></canvas>
 </div>
-
-<style>
-  .frame {
-    height: 40px;
-  }
-
-  canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 3px;
-    cursor: crosshair;
-  }
-
-  canvas.clickable {
-    cursor: pointer;
-  }
-
-  @media (max-width: 700px) {
-    .frame {
-      height: 36px;
-    }
-  }
-</style>

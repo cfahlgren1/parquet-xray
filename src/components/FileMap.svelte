@@ -19,11 +19,14 @@
   const selected = $derived(inspector.selectedRg === null ? null : (rowGroups[inspector.selectedRg] ?? null));
 </script>
 
-<section class="card">
-  <div class="strips">
+<section class="rounded-xl border border-solid border-line px-4 py-3.5 compact:p-3">
+  <div class="grid grid-cols-[minmax(0,1fr)_220px] gap-4 compact:grid-cols-1 compact:gap-2.5">
     <div>
-      <div class="caption">
-        <span><b>File</b> · {formatNumber(model.rowGroups.length)} row groups · click one to open it</span>
+      <div class="mb-1 flex justify-between text-[11px] text-faint">
+        <span
+          ><b class="font-medium text-secondary">File</b> · {formatNumber(model.rowGroups.length)} row groups · click one
+          to open it</span
+        >
         <span>{formatBytes(model.fileSize)}</span>
       </div>
       <ByteStrip
@@ -38,59 +41,18 @@
       />
     </div>
     <div>
-      <div class="caption">
-        <span><b>{model.hasPageIndex ? "Indexes + footer" : "Footer"}</b> magnified</span>
+      <div class="mb-1 flex justify-between text-[11px] text-faint">
+        <span
+          ><b class="font-medium text-secondary">{model.hasPageIndex ? "Indexes + footer" : "Footer"}</b> magnified</span
+        >
         <span>{formatBytes(model.fileSize - model.tailStart)}</span>
       </div>
       <ByteStrip pieces={tail} from={model.tailStart} to={model.fileSize} label="Indexes and footer" />
     </div>
   </div>
   <Legend />
-  <p class="hint">
-    <span class="on-hover">Hover a page for details, click to open its row group below.</span>
-    <span class="on-touch">Tap a row group to open it below.</span>
+  <p class="mt-1.5 mb-0 text-[11.5px] text-faint">
+    <span class="[@media(hover:none)]:hidden">Hover a page for details, click to open its row group below.</span>
+    <span class="hidden [@media(hover:none)]:inline">Tap a row group to open it below.</span>
   </p>
 </section>
-
-<style>
-  .card {
-    padding: 14px 16px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-  }
-
-  .strips {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 220px;
-    gap: 16px;
-  }
-
-  .caption {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 11px;
-    color: var(--text-4);
-  }
-
-  .caption b {
-    font-weight: 500;
-    color: var(--text-2);
-  }
-
-  .hint {
-    margin: 6px 0 0;
-    font-size: 11.5px;
-    color: var(--text-4);
-  }
-
-  @media (max-width: 700px) {
-    .card {
-      padding: 12px;
-    }
-    .strips {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 10px;
-    }
-  }
-</style>

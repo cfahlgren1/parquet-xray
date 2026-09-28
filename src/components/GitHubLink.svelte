@@ -2,7 +2,13 @@
   const REPO = "cfahlgren1/parquet-xray";
 </script>
 
-<a href="https://github.com/{REPO}" target="_blank" rel="noreferrer" aria-label="Star Parquet X-ray on GitHub">
+<a
+  class="inline-flex h-7.5 flex-none items-center gap-1.5 rounded-lg border border-solid border-line bg-surface px-2.5 py-0 text-[12.5px] font-medium text-secondary no-underline hover:border-[#d1d5db] hover:bg-surface-alt hover:text-ink"
+  href="https://github.com/{REPO}"
+  target="_blank"
+  rel="noreferrer"
+  aria-label="Star Parquet X-ray on GitHub"
+>
   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
     <path
       fill="currentColor"
@@ -11,27 +17,3 @@
   </svg>
   <span>Star</span>
 </a>
-
-<style>
-  a {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    gap: 6px;
-    height: 30px;
-    padding: 0 10px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--text-2);
-    text-decoration: none;
-  }
-
-  a:hover {
-    border-color: #d1d5db;
-    background: var(--surface-2);
-    color: var(--text);
-  }
-</style>

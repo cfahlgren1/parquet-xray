@@ -30,29 +30,39 @@
   }
 </script>
 
-<div class="item" class:open>
+<div class="border-0 border-b border-solid border-line-soft last:border-0">
   <button
     type="button"
-    class="summary"
+    class={[
+      "grid h-7.5 w-full cursor-pointer grid-cols-(--rg-columns) items-center gap-2.5 border-0 px-3 py-0 text-left compact:gap-2 compact:px-2.5",
+      open ? "bg-accent-soft" : "bg-transparent hover:bg-surface-alt",
+    ]}
     aria-expanded={open}
     onclick={() => inspector.toggleRowGroup(group.rg)}
     onpointerenter={(event) => hover(event, true)}
     onpointerleave={(event) => hover(event, false)}
   >
-    <span class="chevron" aria-hidden="true">{open ? "▾" : "▸"}</span>
-    <span class="mono">{group.rg}</span>
-    <span class="mono muted">{formatNumber(group.firstRow)}–{formatNumber(group.firstRow + group.numRows - 1)}</span>
-    <span class="bar"><span style:width="{(size / maxSize) * 100}%" style:background={gradient}></span></span>
-    <span class="mono r">{formatBytes(size)}</span>
+    <span class="text-[10px] text-faint" aria-hidden="true">{open ? "▾" : "▸"}</span>
+    <span class="font-mono">{group.rg}</span>
+    <span class="font-mono text-faint"
+      >{formatNumber(group.firstRow)}–{formatNumber(group.firstRow + group.numRows - 1)}</span
+    >
+    <span class="h-2 min-w-0 compact:hidden"
+      ><span class="block h-full rounded-[1px]" style:width="{(size / maxSize) * 100}%" style:background={gradient}
+      ></span></span
+    >
+    <span class="text-right font-mono">{formatBytes(size)}</span>
   </button>
   {#if open}
-    <div class="body">
-      <div class="meta">
-        <span><span class="k">rows</span> <span class="mono">{formatNumber(group.numRows)}</span></span>
-        <span><span class="k">uncompressed</span> <span class="mono">{formatBytes(uncompressed)}</span></span>
+    <div class="bg-[#fcfcfd] pt-2 pr-3 pb-3 pl-9 compact:px-2.5 compact:pb-2.5">
+      <div class="mb-1.5 flex flex-wrap gap-x-4.5 gap-y-1">
+        <span><span class="text-faint">rows</span> <span class="font-mono">{formatNumber(group.numRows)}</span></span>
+        <span
+          ><span class="text-faint">uncompressed</span> <span class="font-mono">{formatBytes(uncompressed)}</span></span
+        >
         <span>
-          <span class="k">bytes</span>
-          <span class="mono">{formatNumber(group.start)}–{formatNumber(group.end)}</span>
+          <span class="text-faint">bytes</span>
+          <span class="font-mono">{formatNumber(group.start)}–{formatNumber(group.end)}</span>
         </span>
       </div>
       {#each group.chunks as chunk (chunk.leaf)}
@@ -61,85 +71,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .item {
-    border-bottom: 1px solid var(--line-soft);
-  }
-
-  .item:last-child {
-    border: 0;
-  }
-
-  .summary {
-    display: grid;
-    grid-template-columns: var(--rg-columns);
-    gap: 10px;
-    align-items: center;
-    width: 100%;
-    height: 30px;
-    padding: 0 12px;
-    border: 0;
-    background: none;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .summary:hover {
-    background: var(--surface-2);
-  }
-
-  .open .summary {
-    background: var(--accent-soft);
-  }
-
-  .chevron {
-    font-size: 10px;
-    color: var(--text-4);
-  }
-
-  .r {
-    text-align: right;
-  }
-
-  .bar {
-    height: 8px;
-    min-width: 0;
-  }
-
-  .bar > span {
-    display: block;
-    height: 100%;
-    border-radius: 1px;
-  }
-
-  .body {
-    padding: 8px 12px 12px 36px;
-    background: #fcfcfd;
-  }
-
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 18px;
-    margin-bottom: 6px;
-  }
-
-  .k {
-    color: var(--text-4);
-  }
-
-  @media (max-width: 700px) {
-    .summary {
-      gap: 8px;
-      padding: 0 10px;
-    }
-    .bar {
-      display: none;
-    }
-    .body {
-      padding: 8px 10px 10px;
-    }
-  }
-</style>

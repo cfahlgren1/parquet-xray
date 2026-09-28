@@ -1,90 +1,67 @@
-:root {
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --spacing: 4px;
 
-  --text: #111827;
-  --text-2: #374151;
-  --text-3: #6b7280;
-  --text-4: #9ca3af;
-  --line: #e5e7eb;
-  --line-soft: #f1f2f4;
-  --surface: #fff;
-  --surface-2: #f9fafb;
-  --accent: #4f46e5;
-  --accent-soft: #eef2ff;
-  --accent-line: #c7d2fe;
-  --ok: #047857;
-  --ok-soft: #ecfdf5;
-  --ok-line: #a7f3d0;
-  --error: #b91c1c;
+  --color-ink: #111827;
+  --color-secondary: #374151;
+  --color-subtle: #6b7280;
+  --color-faint: #9ca3af;
+  --color-line: #e5e7eb;
+  --color-line-soft: #f1f2f4;
+  --color-surface: #fff;
+  --color-surface-alt: #f9fafb;
+  --color-accent: #4f46e5;
+  --color-accent-soft: #eef2ff;
+  --color-accent-line: #c7d2fe;
+  --color-ok: #047857;
+  --color-ok-soft: #ecfdf5;
+  --color-ok-line: #a7f3d0;
+  --color-error: #b91c1c;
 
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 10px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   --shadow-pop: 0 10px 30px -10px rgb(17 24 39 / 25%), 0 2px 6px rgb(17 24 39 / 6%);
-
-  color: var(--text);
-  font: 13px/1.45 var(--font-sans);
 }
 
-* {
-  box-sizing: border-box;
-}
+@custom-variant compact (@media (width <= 700px));
+@custom-variant stacked (@media (width <= 900px));
+@custom-variant hover (&:hover);
 
-html {
-  scrollbar-gutter: stable;
-}
-
-body {
-  margin: 0;
-  background: var(--surface);
-}
-
-button,
-input {
-  font: inherit;
-  color: inherit;
-}
-
-.mono {
-  font-family: var(--font-mono);
-}
-
-.muted {
-  color: var(--text-4);
-}
-
-.swatch {
-  display: inline-block;
-  flex: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-}
-
-h2 {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin: 0 0 8px;
-  font-size: 14px;
-}
-
-h2 small {
-  font-weight: 400;
-  font-size: 12px;
-  color: var(--text-4);
-}
-
-.on-touch {
-  display: none;
-}
-
-@media (hover: none) {
-  .on-hover {
-    display: none;
+/* Keep the original browser defaults; Preflight resets headings, lists and form controls. */
+@layer base {
+  :root {
+    @apply font-sans text-[13px] leading-[1.45] text-ink;
   }
-  .on-touch {
-    display: inline;
+
+  * {
+    @apply box-border;
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    @apply m-0 bg-surface;
+  }
+
+  button,
+  input {
+    font: inherit;
+    color: inherit;
+  }
+
+  h2 {
+    @apply mt-0 mb-2 flex items-baseline gap-2 text-[14px];
+  }
+
+  h2 small {
+    @apply text-[12px] font-normal text-faint;
   }
 }

@@ -74,18 +74,27 @@
   {ondrop}
 />
 
-<div class="page">
-  <header>
-    <div class="title">
-      <h1><span class="logo" aria-hidden="true">▦</span> Parquet X-ray</h1>
+<div class="mx-auto max-w-[1280px] px-7 pt-7 pb-15 compact:px-3.5 compact:pt-4.5 compact:pb-10">
+  <header class="mb-4">
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="m-0 flex items-center gap-2 text-[20px] compact:text-[18px]">
+        <span class="text-[#6366f1]" aria-hidden="true">▦</span> Parquet X-ray
+      </h1>
       <GitHubLink />
     </div>
-    <p>See how a Parquet file is laid out, byte by byte. Only the footer and indexes are downloaded.</p>
+    <p class="mt-1 mb-0 text-subtle compact:text-[12.5px]">
+      See how a Parquet file is laid out, byte by byte. Only the footer and indexes are downloaded.
+    </p>
   </header>
 
   <SourceInput bind:value={input} onurl={(url) => openUrl(url)} onfile={openFile} />
 
-  <p class="status" class:error={status?.error} role="status">{status?.text ?? ""}</p>
+  <p
+    class={["mt-4.5 mb-0 min-h-4.5 text-[12px] empty:m-0 empty:min-h-0", status?.error ? "text-error" : "text-subtle"]}
+    role="status"
+  >
+    {status?.text ?? ""}
+  </p>
 
   {#if inspector}
     {#key inspector}
@@ -97,83 +106,9 @@
 </div>
 
 {#if dragging}
-  <div class="drop">Drop a .parquet file anywhere</div>
+  <div
+    class="pointer-events-none fixed inset-3 z-20 grid place-items-center rounded-[16px] border-2 border-dashed border-[#818cf8] bg-[rgb(238_242_255/85%)] text-[18px] text-[#4338ca]"
+  >
+    Drop a .parquet file anywhere
+  </div>
 {/if}
-
-<style>
-  .page {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 28px 28px 60px;
-  }
-
-  header {
-    margin-bottom: 16px;
-  }
-
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  h1 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-    font-size: 20px;
-  }
-
-  .logo {
-    color: #6366f1;
-  }
-
-  header p {
-    margin: 4px 0 0;
-    color: var(--text-3);
-  }
-
-  .status {
-    min-height: 18px;
-    margin: 18px 0 0;
-    font-size: 12px;
-    color: var(--text-3);
-  }
-
-  .status:empty {
-    min-height: 0;
-    margin: 0;
-  }
-
-  .status.error {
-    color: var(--error);
-  }
-
-  .drop {
-    position: fixed;
-    inset: 12px;
-    z-index: 20;
-    display: grid;
-    place-items: center;
-    border: 2px dashed #818cf8;
-    border-radius: 16px;
-    background: rgb(238 242 255 / 85%);
-    font-size: 18px;
-    color: #4338ca;
-    pointer-events: none;
-  }
-
-  @media (max-width: 700px) {
-    .page {
-      padding: 18px 14px 40px;
-    }
-    h1 {
-      font-size: 18px;
-    }
-    header p {
-      font-size: 12.5px;
-    }
-  }
-</style>
