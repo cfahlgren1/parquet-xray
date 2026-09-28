@@ -3,46 +3,15 @@
   const MAX_WHOLE = 32;
   const TAIL = 26;
 
-  let { name }: { name: string } = $props();
+  let { name, class: className = "" }: { name: string; class?: string } = $props();
   const split = $derived(name.length > MAX_WHOLE);
 </script>
 
 {#if split}
-  <span class="name split" title={name}>
-    <span class="head">{name.slice(0, -TAIL)}</span>
-    <span class="tail"><span>{name.slice(-TAIL)}</span></span>
+  <span class={["flex min-w-0 flex-[0_1_auto]", className]} title={name}>
+    <span class="min-w-0 flex-[0_1000_auto] overflow-hidden text-ellipsis">{name.slice(0, -TAIL)}</span>
+    <span class="flex min-w-0 flex-[0_1_auto] justify-end overflow-hidden"><span>{name.slice(-TAIL)}</span></span>
   </span>
 {:else}
-  <span class="name whole">{name}</span>
+  <span class={["min-w-0 flex-[0_1_auto] overflow-hidden text-ellipsis", className]}>{name}</span>
 {/if}
-
-<style>
-  .whole {
-    flex: 0 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .split {
-    display: flex;
-    flex: 0 1 auto;
-    min-width: 0;
-  }
-
-  .head {
-    flex: 0 1000 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Clips from the left on narrow screens, keeping the end of the name. */
-  .tail {
-    display: flex;
-    flex: 0 1 auto;
-    justify-content: flex-end;
-    min-width: 0;
-    overflow: hidden;
-  }
-</style>

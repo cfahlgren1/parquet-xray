@@ -11,7 +11,7 @@
   // Selections made outside the list (file map, column panel, a shared link) scroll it to the open row group.
   $effect(() => {
     if (!inspector.revealTick) return;
-    const open = list.querySelector<HTMLElement>(".open");
+    const open = list.querySelector<HTMLElement>("[aria-expanded=true]")?.parentElement;
     if (!open) return;
     list.scrollTop = open.offsetTop - 26;
     if (inspector.revealInPage) open.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -20,62 +20,19 @@
 
 <section>
   <h2>Row groups <small>{formatNumber(rowGroups.length)} · click one, or click it in the file strip</small></h2>
-  <div class="list" bind:this={list}>
-    <div class="header">
-      <span></span><span>rg</span><span>rows</span><span></span><span class="r">size</span>
+  <div
+    class="relative max-h-[640px] [scrollbar-gutter:stable] overflow-x-hidden overflow-y-auto rounded-xl border border-solid border-line text-[12px] [--rg-columns:14px_36px_150px_minmax(0,1fr)_64px] compact:max-h-[70vh] compact:[--rg-columns:12px_28px_minmax(0,1fr)_58px]"
+    bind:this={list}
+  >
+    <div
+      class="sticky top-0 z-1 grid h-6.5 grid-cols-(--rg-columns) items-center gap-2.5 border-0 border-b border-solid border-line-soft bg-surface px-3 py-0 text-[11px] text-faint compact:gap-2 compact:px-2.5"
+    >
+      <span></span><span>rg</span><span>rows</span><span class="compact:hidden"></span><span class="text-right"
+        >size</span
+      >
     </div>
     {#each rowGroups as group (group.rg)}
       <RowGroupItem {group} {maxSize} />
     {/each}
   </div>
 </section>
-
-<style>
-  .list {
-    position: relative;
-    max-height: 640px;
-    overflow: hidden auto;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-lg);
-    font-size: 12px;
-    scrollbar-gutter: stable;
-  }
-
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: var(--rg-columns);
-    gap: 10px;
-    align-items: center;
-    height: 26px;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--line-soft);
-    background: var(--surface);
-    font-size: 11px;
-    color: var(--text-4);
-  }
-
-  .list {
-    --rg-columns: 14px 36px 150px minmax(0, 1fr) 64px;
-  }
-
-  .r {
-    text-align: right;
-  }
-
-  @media (max-width: 700px) {
-    .list {
-      --rg-columns: 12px 28px minmax(0, 1fr) 58px;
-      max-height: 70vh;
-    }
-    .header {
-      gap: 8px;
-      padding: 0 10px;
-    }
-    .header > :nth-child(4) {
-      display: none;
-    }
-  }
-</style>

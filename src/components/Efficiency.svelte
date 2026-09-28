@@ -9,113 +9,32 @@
   let note = $state("");
 </script>
 
-<div class="checks" role="group" aria-label="Read efficiency">
+<div
+  class="flex flex-wrap items-center gap-2 border-0 border-t border-solid border-line-soft px-4 pt-2.5 pb-3 compact:px-3"
+  role="group"
+  aria-label="Read efficiency"
+>
   {#each checks as check (check.label)}
     <button
       type="button"
-      class="chip"
-      class:passed={check.passed}
+      class={[
+        "relative inline-flex cursor-help items-center gap-1.5 rounded-[999px] border border-solid py-[3px] pr-2.5 pl-2 text-[12px]",
+        "after:absolute after:top-[calc(100%+6px)] after:left-0 after:z-20 after:hidden after:w-max after:max-w-70 after:rounded-lg after:border after:border-solid after:border-line after:bg-surface after:px-2.5 after:py-[7px] after:text-left after:text-[12px] after:leading-[1.4] after:font-normal after:whitespace-normal after:text-secondary after:shadow-[0_8px_24px_-8px_rgb(17_24_39/20%)] after:content-[attr(data-tip)] hover:after:block focus-visible:after:block compact:after:hidden!",
+        check.passed ? "border-ok-line bg-ok-soft text-[#065f46]" : "border-line bg-surface text-subtle",
+      ]}
       data-tip={check.detail}
       onclick={() => (note = note === check.detail ? "" : check.detail)}
     >
       <span aria-hidden="true">{check.passed ? "✓" : "–"}</span>
-      <b>{check.label}</b>
+      <b class="font-medium">{check.label}</b>
       {#if check.columns.length}
-        <span class="columns mono">{summarizeNames(check.columns)}</span>
+        <span class={["max-w-65 truncate font-mono text-[11.5px]", check.passed && "text-ok"]}
+          >{summarizeNames(check.columns)}</span
+        >
       {/if}
     </button>
   {/each}
   {#if note}
-    <p class="note">{note}</p>
+    <p class="m-0 hidden basis-full px-0.5 pt-0.5 pb-0 text-[12px] text-secondary compact:block">{note}</p>
   {/if}
 </div>
-
-<style>
-  .checks {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px 12px;
-    border-top: 1px solid var(--line-soft);
-  }
-
-  .chip {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px 3px 8px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--surface);
-    font-size: 12px;
-    color: var(--text-3);
-    cursor: help;
-  }
-
-  .chip b {
-    font-weight: 500;
-  }
-
-  .columns {
-    max-width: 260px;
-    overflow: hidden;
-    font-size: 11.5px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .chip.passed {
-    border-color: var(--ok-line);
-    background: var(--ok-soft);
-    color: #065f46;
-  }
-
-  .chip.passed .columns {
-    color: var(--ok);
-  }
-
-  .chip:hover::after,
-  .chip:focus-visible::after {
-    content: attr(data-tip);
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 20;
-    width: max-content;
-    max-width: 280px;
-    padding: 7px 10px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    background: var(--surface);
-    box-shadow: 0 8px 24px -8px rgb(17 24 39 / 20%);
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.4;
-    color: var(--text-2);
-    text-align: left;
-    white-space: normal;
-  }
-
-  .note {
-    display: none;
-    flex-basis: 100%;
-    margin: 0;
-    padding: 2px 2px 0;
-    font-size: 12px;
-    color: var(--text-2);
-  }
-
-  @media (max-width: 700px) {
-    .checks {
-      padding: 10px 12px 12px;
-    }
-    .chip::after {
-      display: none;
-    }
-    .note {
-      display: block;
-    }
-  }
-</style>

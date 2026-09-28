@@ -27,8 +27,9 @@
   }
 </script>
 
-<form {onsubmit}>
+<form class="flex gap-2 compact:flex-wrap" {onsubmit}>
   <input
+    class="flex-1 rounded-lg border border-solid border-[#d1d5db] px-3 py-[9px] font-mono text-[13px] [outline:none] focus:border-[#818cf8] focus:shadow-[0_0_0_3px_var(--color-accent-soft)] compact:basis-full compact:text-[16px]"
     bind:value
     type="text"
     spellcheck="false"
@@ -36,102 +37,26 @@
     aria-label="Parquet file URL"
     placeholder="Paste a Parquet URL, a Hub file URL, or hf://datasets/owner/repo/file.parquet"
   />
-  <button type="submit" class="primary">Inspect</button>
-  <label class="secondary">Open file<input type="file" accept=".parquet" hidden {onchange} /></label>
+  <button
+    type="submit"
+    class="cursor-pointer rounded-lg border-0 bg-ink px-4 py-0 font-semibold text-white compact:h-10 compact:flex-1"
+    >Inspect</button
+  >
+  <label
+    class="grid cursor-pointer place-items-center rounded-lg border border-solid border-[#d1d5db] px-3.5 py-0 text-secondary compact:h-10 compact:flex-1"
+    >Open file<input type="file" accept=".parquet" hidden {onchange} /></label
+  >
 </form>
 
-<div class="examples">
-  <span class="muted">Try</span>
+<div
+  class="mt-2 flex flex-wrap items-center gap-1.5 text-[12px] compact:flex-nowrap compact:overflow-x-auto compact:pb-1"
+>
+  <span class="text-faint">Try</span>
   {#each examples as example (example.url)}
-    <button type="button" onclick={() => onurl(example.url)}>{example.label}</button>
+    <button
+      class="cursor-pointer rounded-[999px] border border-solid border-line bg-surface-alt px-2.5 py-[3px] text-[12px] text-secondary hover:border-accent-line hover:bg-accent-soft compact:whitespace-nowrap"
+      type="button"
+      onclick={() => onurl(example.url)}>{example.label}</button
+    >
   {/each}
 </div>
-
-<style>
-  form {
-    display: flex;
-    gap: 8px;
-  }
-
-  input[type="text"] {
-    flex: 1;
-    padding: 9px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: var(--radius);
-    outline: none;
-    font-family: var(--font-mono);
-    font-size: 13px;
-  }
-
-  input[type="text"]:focus {
-    border-color: #818cf8;
-    box-shadow: 0 0 0 3px var(--accent-soft);
-  }
-
-  .primary {
-    padding: 0 16px;
-    border: 0;
-    border-radius: var(--radius);
-    background: var(--text);
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .secondary {
-    display: grid;
-    place-items: center;
-    padding: 0 14px;
-    border: 1px solid #d1d5db;
-    border-radius: var(--radius);
-    color: var(--text-2);
-    cursor: pointer;
-  }
-
-  .examples {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    font-size: 12px;
-  }
-
-  .examples button {
-    padding: 3px 10px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--surface-2);
-    font-size: 12px;
-    color: var(--text-2);
-    cursor: pointer;
-  }
-
-  .examples button:hover {
-    border-color: var(--accent-line);
-    background: var(--accent-soft);
-  }
-
-  @media (max-width: 700px) {
-    form {
-      flex-wrap: wrap;
-    }
-    input[type="text"] {
-      flex-basis: 100%;
-      font-size: 16px;
-    }
-    .primary,
-    .secondary {
-      flex: 1;
-      height: 40px;
-    }
-    .examples {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-    .examples button {
-      white-space: nowrap;
-    }
-  }
-</style>

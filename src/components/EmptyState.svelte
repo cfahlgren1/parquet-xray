@@ -9,62 +9,18 @@
   ];
 </script>
 
-<div class="empty">
-  <div class="strip" aria-hidden="true">
-    <span style:flex="3"></span>
-    <span style:flex="1.2" class="dict"></span>
-    <span style:flex="2.4"></span>
-    <span style:flex="1" class="dict"></span>
-    <span style:flex="2.8"></span>
-    <span style:flex=".5" class="footer"></span>
+<div class="mt-6.5 rounded-[12px] border border-dashed border-line p-5.5 text-[#4b5563]">
+  <div class="mb-4 flex h-5.5 gap-0.5" aria-hidden="true">
+    <span class="flex-[3] rounded-[2px] bg-[#c3c8d0]"></span>
+    <span class="flex-[1.2] rounded-[2px] bg-[#e2e5ea]"></span>
+    <span class="flex-[2.4] rounded-[2px] bg-[#c3c8d0]"></span>
+    <span class="flex-1 rounded-[2px] bg-[#e2e5ea]"></span>
+    <span class="flex-[2.8] rounded-[2px] bg-[#c3c8d0]"></span>
+    <span class="flex-[0.5] rounded-[2px] bg-[#4b5563]"></span>
   </div>
-  <ol>
+  <ol class="m-0 grid gap-2 pl-4.5">
     {#each steps as step (step.name)}
-      <li><b>{step.name}</b> {step.text}</li>
+      <li><b class="inline-block min-w-[86px] font-semibold text-ink">{step.name}</b> {step.text}</li>
     {/each}
   </ol>
 </div>
-
-<style>
-  .empty {
-    margin-top: 26px;
-    padding: 22px;
-    border: 1px dashed var(--line);
-    border-radius: 12px;
-    color: #4b5563;
-  }
-
-  .strip {
-    display: flex;
-    gap: 2px;
-    height: 22px;
-    margin-bottom: 16px;
-  }
-
-  .strip span {
-    border-radius: 2px;
-    background: #c3c8d0;
-  }
-
-  .strip .dict {
-    background: #e2e5ea;
-  }
-
-  .strip .footer {
-    background: #4b5563;
-  }
-
-  ol {
-    display: grid;
-    gap: 8px;
-    margin: 0;
-    padding-left: 18px;
-  }
-
-  b {
-    display: inline-block;
-    min-width: 86px;
-    font-weight: 600;
-    color: var(--text);
-  }
-</style>

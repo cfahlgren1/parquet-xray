@@ -28,118 +28,33 @@
   }
 </script>
 
-<section aria-label="File summary">
-  <header>
-    <h2 class="mono">{model.name}</h2>
-    <span class="loaded">{inspector.loadSummary}</span>
+<section class="overflow-hidden rounded-[12px] border border-solid border-line" aria-label="File summary">
+  <header
+    class="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-0 border-b border-solid border-line bg-surface-alt py-2.5 pr-3 pl-4 compact:px-3"
+  >
+    <h2 class="m-0 min-w-0 truncate font-mono text-[14px] font-semibold">{model.name}</h2>
+    <span class="text-[12px] text-subtle compact:order-3 compact:basis-full">{inspector.loadSummary}</span>
     {#if inspector.source !== null}
-      <button type="button" onclick={copyLink}>{copied ? "Copied" : "Copy link"}</button>
+      <button
+        class="ml-auto cursor-pointer rounded-md border border-solid border-line bg-surface px-2.5 py-[3px] text-[12px] text-secondary hover:border-[#d1d5db]"
+        type="button"
+        onclick={copyLink}>{copied ? "Copied" : "Copy link"}</button
+      >
     {/if}
   </header>
-  <dl>
+  <dl
+    class="m-0 grid grid-cols-[repeat(5,minmax(0,1fr))_minmax(0,1.6fr)] gap-3 px-4 py-3 compact:grid-cols-3 compact:px-3"
+  >
     {#each stats as stat (stat.label)}
       <div>
-        <dt>{stat.label}</dt>
-        <dd>{stat.value}</dd>
+        <dt class="text-[11.5px] text-subtle">{stat.label}</dt>
+        <dd class="mx-0 mt-0.5 mb-0 truncate text-[15px] font-semibold">{stat.value}</dd>
       </div>
     {/each}
-    <div class="created">
-      <dt>Created by</dt>
-      <dd class="mono">{metadata.created_by ?? "unknown"}</dd>
+    <div class="compact:col-span-full">
+      <dt class="text-[11.5px] text-subtle">Created by</dt>
+      <dd class="mx-0 mt-1 mb-0 truncate font-mono text-[12.5px] font-medium">{metadata.created_by ?? "unknown"}</dd>
     </div>
   </dl>
   <Efficiency />
 </section>
-
-<style>
-  section {
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-  }
-
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 10px;
-    padding: 10px 12px 10px 16px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface-2);
-  }
-
-  h2 {
-    min-width: 0;
-    margin: 0;
-    overflow: hidden;
-    font-size: 14px;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .loaded {
-    font-size: 12px;
-    color: var(--text-3);
-  }
-
-  button {
-    margin-left: auto;
-    padding: 3px 10px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    font-size: 12px;
-    color: var(--text-2);
-    cursor: pointer;
-  }
-
-  button:hover {
-    border-color: #d1d5db;
-  }
-
-  dl {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, 1.6fr);
-    gap: 12px;
-    margin: 0;
-    padding: 12px 16px;
-  }
-
-  dt {
-    font-size: 11.5px;
-    color: var(--text-3);
-  }
-
-  dd {
-    margin: 2px 0 0;
-    overflow: hidden;
-    font-size: 15px;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .created dd {
-    margin-top: 4px;
-    font-size: 12.5px;
-    font-weight: 500;
-  }
-
-  @media (max-width: 700px) {
-    header {
-      padding: 10px 12px;
-    }
-    .loaded {
-      order: 3;
-      flex-basis: 100%;
-    }
-    dl {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      padding: 12px;
-    }
-    .created {
-      grid-column: 1 / -1;
-    }
-  }
-</style>
