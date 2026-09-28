@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function openSensors(page: Page, query = "") {
   await page.goto(`/?url=sensors.parquet${query}`);
-  await expect(page.getByRole("status")).toContainText("Read ");
+  await expect(page.getByRole("region", { name: "File summary" })).toContainText(/read .* of 4\.7 MB/);
 }
 
 test("shows the file facts and read efficiency", async ({ page }) => {

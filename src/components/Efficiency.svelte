@@ -9,8 +9,7 @@
   let note = $state("");
 </script>
 
-<section>
-  <span class="label">Read efficiency</span>
+<div class="checks" role="group" aria-label="Read efficiency">
   {#each checks as check (check.label)}
     <button
       type="button"
@@ -29,20 +28,16 @@
   {#if note}
     <p class="note">{note}</p>
   {/if}
-</section>
+</div>
 
 <style>
-  section {
+  .checks {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-  }
-
-  .label {
-    margin-right: 4px;
-    font-size: 12px;
-    color: var(--text-3);
+    padding: 10px 16px 12px;
+    border-top: 1px solid var(--line-soft);
   }
 
   .chip {
@@ -113,8 +108,8 @@
   }
 
   @media (max-width: 700px) {
-    .label {
-      flex-basis: 100%;
+    .checks {
+      padding: 10px 12px 12px;
     }
     .chip::after {
       display: none;

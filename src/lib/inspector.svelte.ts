@@ -14,6 +14,8 @@ export class Inspector {
   readonly model: ParquetModel;
   /** The remote URL being shown; local files have no shareable link. */
   readonly source: string | null;
+  /** How much was downloaded to open the file, e.g. "read 512 KB of 4.7 MB · 1 request · 30 ms". */
+  readonly loadSummary: string;
 
   selectedRg = $state<number | null>(null);
   selectedLeaf = $state<number | null>(null);
@@ -26,9 +28,15 @@ export class Inspector {
   revealInPage = false;
   popover = $state.raw<Popover | null>(null);
 
-  constructor(model: ParquetModel, source: string | null, initial: { rg: number | null; col: string | null }) {
+  constructor(
+    model: ParquetModel,
+    source: string | null,
+    initial: { rg: number | null; col: string | null },
+    loadSummary: string,
+  ) {
     this.model = model;
     this.source = source;
+    this.loadSummary = loadSummary;
     this.selectedRg = initial.rg !== null && model.rowGroups[initial.rg] ? initial.rg : null;
     const leaf = model.leaves.findIndex((l) => l.path === initial.col);
     this.selectedLeaf = leaf === -1 ? null : leaf;

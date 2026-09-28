@@ -29,12 +29,11 @@
     try {
       const { model, counter } = await loadParquet(name, open);
       if (id !== loadId) return;
-      inspector = new Inspector(model, source, initial);
       const ms = Math.round(performance.now() - started);
-      const requests = `${counter.requests} range request${counter.requests === 1 ? "" : "s"}`;
-      status = {
-        text: `Read ${formatBytes(counter.bytes)} of ${formatBytes(model.fileSize)} in ${requests} · ${ms} ms`,
-      };
+      const requests = `${counter.requests} request${counter.requests === 1 ? "" : "s"}`;
+      const summary = `read ${formatBytes(counter.bytes)} of ${formatBytes(model.fileSize)} · ${requests} · ${ms} ms`;
+      inspector = new Inspector(model, source, initial, summary);
+      status = null;
     } catch (error) {
       if (id !== loadId) return;
       console.error(error);
@@ -92,7 +91,7 @@
     {#key inspector}
       <Viewer {inspector} />
     {/key}
-  {:else if !status}
+  {:else if !status?.text}
     <EmptyState />
   {/if}
 </div>
@@ -141,6 +140,11 @@
     margin: 18px 0 0;
     font-size: 12px;
     color: var(--text-3);
+  }
+
+  .status:empty {
+    min-height: 0;
+    margin: 0;
   }
 
   .status.error {

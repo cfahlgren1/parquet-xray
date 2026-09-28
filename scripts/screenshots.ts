@@ -10,7 +10,7 @@ const BASE = `http://localhost:${PORT}`;
 
 async function open(page: Page, query: string) {
   await page.goto(`${BASE}/?${query}`);
-  await page.getByRole("status").filter({ hasText: /Read / }).waitFor({ timeout: 90_000 });
+  await page.getByRole("region", { name: "File summary" }).waitFor({ timeout: 90_000 });
   await page.waitForTimeout(300);
 }
 

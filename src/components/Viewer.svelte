@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Efficiency from "./Efficiency.svelte";
-  import Facts from "./Facts.svelte";
+  import FileSummary from "./FileSummary.svelte";
   import FileMap from "./FileMap.svelte";
   import Popover from "./Popover.svelte";
   import RowGroups from "./RowGroups.svelte";
@@ -24,8 +23,7 @@
 <svelte:document onclick={() => inspector.hidePopover()} />
 
 <main>
-  <Facts />
-  <Efficiency />
+  <FileSummary />
   <FileMap />
   <div class="columns">
     <Schema />
