@@ -1,5 +1,6 @@
 <script lang="ts">
   import EmptyState from "./components/EmptyState.svelte";
+  import GitHubLink from "./components/GitHubLink.svelte";
   import SourceInput from "./components/SourceInput.svelte";
   import Viewer from "./components/Viewer.svelte";
   import { Inspector } from "./lib/inspector.svelte";
@@ -76,7 +77,10 @@
 
 <div class="page">
   <header>
-    <h1><span class="logo" aria-hidden="true">▦</span> Parquet X-ray</h1>
+    <div class="title">
+      <h1><span class="logo" aria-hidden="true">▦</span> Parquet X-ray</h1>
+      <GitHubLink />
+    </div>
     <p>See how a Parquet file is laid out, byte by byte. Only the footer and indexes are downloaded.</p>
   </header>
 
@@ -106,6 +110,13 @@
 
   header {
     margin-bottom: 16px;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   h1 {
