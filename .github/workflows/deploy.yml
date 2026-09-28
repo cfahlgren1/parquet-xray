@@ -8,12 +8,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Needs an HF_TOKEN repository secret with write access to the Space.
     if: github.repository == 'cfahlgren1/parquet-xray'
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v6
-      - run: uv tool install huggingface_hub
-      - run: ./scripts/deploy-space.sh
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Check for a token
+        if: env.HF_TOKEN == ''
+        run: echo "::notice::Skipping deploy; add an HF_TOKEN secret with write access to the Space."
+      - if: env.HF_TOKEN != ''
+        uses: actions/checkout@v5
+      - if: env.HF_TOKEN != ''
+        uses: astral-sh/setup-uv@v6
+      - if: env.HF_TOKEN != ''
+        run: uv tool install huggingface_hub && ./scripts/deploy-space.sh
