@@ -28,9 +28,9 @@
   }
 </script>
 
-<section class="overflow-hidden rounded-[12px] border border-solid border-line" aria-label="File summary">
+<section class="rounded-[12px] border border-solid border-line" aria-label="File summary">
   <header
-    class="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-0 border-b border-solid border-line bg-surface-alt py-2.5 pr-3 pl-4 compact:px-3"
+    class="flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-t-[12px] border-0 border-b border-solid border-line bg-surface-alt py-2.5 pr-3 pl-4 compact:px-3"
   >
     <h2 class="m-0 min-w-0 truncate font-mono text-[14px] font-semibold">{model.name}</h2>
     <span class="text-[12px] text-subtle compact:order-3 compact:basis-full">{inspector.loadSummary}</span>
