@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 async function openSensors(page: Page, query = "") {
   await page.goto(`/?url=sensors.parquet${query}`);
@@ -58,4 +59,44 @@ test("hovering the file map explains the page under the pointer", async ({ page,
 test("reports files that aren't Parquet", async ({ page }) => {
   await page.goto("/?url=index.html");
   await expect(page.getByRole("status")).toContainText("doesn't look like a Parquet file");
+});
+
+/** Serves a test fixture with Range support, so geo files needn't be committed to public/. */
+async function serveFixture(page: Page, name: string) {
+  const bytes = await readFile(`tests/fixtures/${name}`);
+  await page.route(`**/${name}`, async (route) => {
+    const headers = { "accept-ranges": "bytes", "content-type": "application/octet-stream" };
+    const range = /bytes=(\d+)-(\d*)/.exec(route.request().headers().range ?? "");
+    if (route.request().method() === "HEAD" || !range) {
+      const body = route.request().method() === "HEAD" ? undefined : bytes;
+      return route.fulfill({ headers: { ...headers, "content-length": String(bytes.length) }, body });
+    }
+    const start = Number(range[1]);
+    const end = range[2] ? Math.min(Number(range[2]), bytes.length - 1) : bytes.length - 1;
+    await route.fulfill({
+      status: 206,
+      headers: { ...headers, "content-range": `bytes ${start}-${end}/${bytes.length}` },
+      body: bytes.subarray(start, end + 1),
+    });
+  });
+}
+
+test("maps row group and geo key bboxes, without a basemap when it can't load", async ({ page }) => {
+  await page.route("**/tiles.openfreemap.org/**", (route) => route.abort());
+  await serveFixture(page, "geo-covering.parquet");
+  await page.goto("/?url=geo-covering.parquet");
+  const map = page.getByRole("region", { name: "Geometry map" });
+  await expect(map).toContainText("2 of 2 row groups have a bbox (from the bbox covering columns)");
+  await expect(map).toContainText("WKB binary · WGS 84");
+  await expect(map.getByText("geo key bbox")).toBeVisible();
+  await expect(map).toContainText("File bbox from the geo key");
+  await expect(map).toContainText("The basemap couldn't load");
+});
+
+test("doesn't load the map for files without geometry", async ({ page }) => {
+  const chunks: string[] = [];
+  page.on("request", (request) => chunks.push(request.url()));
+  await openSensors(page);
+  await expect(page.getByRole("region", { name: "Geometry map" })).toHaveCount(0);
+  expect(chunks.filter((url) => /maplibre|lonlat|GeoMap/.test(url))).toEqual([]);
 });

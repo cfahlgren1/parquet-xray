@@ -22,6 +22,8 @@
   --color-ok-soft: #ecfdf5;
   --color-ok-line: #a7f3d0;
   --color-error: #b91c1c;
+  /* The GeoParquet file bbox on the geometry map, apart from the accent row group boxes. */
+  --color-extent: #d97706;
 
   --radius-md: 6px;
   --radius-lg: 8px;

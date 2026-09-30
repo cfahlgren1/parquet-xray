@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "hyparquet": "1.31.2",
+    "maplibre-gl": "6.11.2",
     "proj4": "2.22.0"
   },
   "devDependencies": {

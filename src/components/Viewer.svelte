@@ -25,6 +25,10 @@
 <main class="mt-4.5 grid grid-cols-1 gap-4.5">
   <FileSummary />
   <FileMap />
+  {#if inspector.model.geo}
+    <!-- Loaded only for files with geometry, along with MapLibre and proj4. -->
+    {#await import("./GeoMap.svelte") then { default: GeoMap }}<GeoMap />{/await}
+  {/if}
   <div class="grid grid-cols-2 items-start gap-4.5 stacked:grid-cols-1">
     <Schema />
     <RowGroups />
