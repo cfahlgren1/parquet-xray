@@ -10,7 +10,8 @@ export interface Loaded {
 /** Reads the footer and page indexes of a Parquet file and lays out every byte range. */
 export async function loadParquet(name: string, open: () => Promise<Source>): Promise<Loaded> {
   const { file, counter } = tailBuffer(await open());
-  const metadata = await parquetMetadataAsync(file);
+  // hyparquet would otherwise copy GEOMETRY types from the `geo` key into the schema; show what the footer declares.
+  const metadata = await parquetMetadataAsync(file, { geoparquet: false });
   const indexes = await readIndexes(file, metadata);
   return { model: buildModel(name, file.byteLength, metadata, indexes), counter };
 }
