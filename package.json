@@ -18,7 +18,8 @@
     "screenshots": "npm run build && node scripts/screenshots.ts"
   },
   "dependencies": {
-    "hyparquet": "1.31.2"
+    "hyparquet": "1.31.2",
+    "proj4": "2.22.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
