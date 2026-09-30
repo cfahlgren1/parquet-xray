@@ -1,4 +1,5 @@
 import { parquetSchema, readColumnIndex, readOffsetIndex } from "hyparquet";
+import { readGeo, type GeoModel } from "./geo";
 import type { AsyncBuffer, ColumnIndex, ColumnMetaData, FileMetaData, OffsetIndex, SchemaElement } from "hyparquet";
 
 /** Skip page indexes spread over more than this; fetching them would cost more than the footer. */
@@ -93,6 +94,8 @@ export interface ParquetModel {
   /** Compressed bytes per leaf column across all row groups. */
   leafBytes: number[];
   hasPageIndex: boolean;
+  /** Geometry columns and GeoParquet metadata, or null for files with neither. */
+  geo: GeoModel | null;
 }
 
 export function leafColumns(metadata: FileMetaData): Leaf[] {
@@ -247,6 +250,7 @@ export function buildModel(
     tailStart: Math.min(footerStart, ...indexStarts),
     leafBytes,
     hasPageIndex: pieces.some((p) => p.kind === "offsetIndex"),
+    geo: safeReadGeo(metadata, leaves),
   };
 }
 
@@ -260,4 +264,14 @@ export function chunkAt(group: RowGroupInfo, leaf: number): Chunk {
   const found = group.chunks[leaf];
   if (!found) throw new Error(`row group ${group.rg} has no column ${leaf}`);
   return found;
+}
+
+/** Geo metadata is written by many tools, and a broken `geo` key shouldn't stop the rest of the file loading. */
+function safeReadGeo(metadata: FileMetaData, leaves: Leaf[]): GeoModel | null {
+  try {
+    return readGeo(metadata, leaves);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { version: null, geoKey: null, columns: [], issues: [`the geo metadata couldn't be read (${message})`] };
+  }
 }
