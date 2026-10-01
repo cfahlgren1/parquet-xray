@@ -9,6 +9,7 @@
 
   const examples = [
     { label: "sensors (sorted, page index, bloom filter)", url: "sensors.parquet" },
+    { label: "places (GeoParquet 2.0)", url: "places.parquet" },
     {
       label: "fineweb-edu shard (2 GB)",
       url: "https://huggingface.co/datasets/HuggingFaceFW/fineweb-edu/resolve/main/sample/10BT/000_00000.parquet",

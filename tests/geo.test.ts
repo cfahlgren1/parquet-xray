@@ -1,6 +1,6 @@
 import type { FileMetaData, LogicalType } from "hyparquet";
 import { describe, expect, it } from "vitest";
-import { geometryTypeName, nativeCrs, readGeo } from "../src/lib/parquet/geo";
+import { geometryTypeName, isLonLat, nativeCrs, overlappingBoxes, readGeo } from "../src/lib/parquet/geo";
 import type { Leaf } from "../src/lib/parquet/model";
 import { schemaLines } from "../src/lib/parquet/schema";
 import { loadFixture } from "./helpers";
@@ -155,6 +155,20 @@ describe("geo metadata checks", () => {
     expect(bad?.columns[0]?.bbox).toBeNull();
     expect(bad?.issues).toEqual(['"geometry" has a geo bbox that isn\'t 4, 6 or 8 numbers']);
   });
+
+  it("flags lon/lat statistics outside the globe, as a writer bug produces", () => {
+    const stats = { bbox: { xmin: 5.8e-10, xmax: -1e-108, ymin: 4.4e131, ymax: -5.2e-179 } };
+    const metadata = {
+      row_groups: [{ columns: [{ meta_data: { geospatial_statistics: stats } }] }],
+      key_value_metadata: [],
+    } as unknown as FileMetaData;
+    expect(readGeo(metadata, geometry({ type: "GEOMETRY" }))?.issues).toEqual([
+      '"geometry" has row group bboxes outside longitude/latitude range, so its statistics look wrong',
+    ]);
+    // Meters in a projected CRS aren't held to it.
+    const mercator = readGeo(metadata, geometry({ type: "GEOMETRY", crs: "EPSG:3857" }));
+    expect(mercator?.issues).toEqual([]);
+  });
 });
 
 describe("crs and geometry type helpers", () => {
@@ -177,5 +191,37 @@ describe("crs and geometry type helpers", () => {
       "Polygon M",
       "MultiPolygon ZM",
     ]);
+  });
+});
+
+describe("row group bboxes", () => {
+  const box = (xmin: number, xmax: number, ymin = 0, ymax = 1) => ({ xmin, xmax, ymin, ymax });
+
+  it("counts the bboxes that overlap another", () => {
+    expect(overlappingBoxes([box(0, 1), box(2, 3), box(4, 5)])).toBe(0);
+    expect(overlappingBoxes([box(0, 2), box(1, 3), box(4, 5), null])).toBe(2);
+    // Same x, different y.
+    expect(overlappingBoxes([box(0, 1, 0, 1), box(0, 1, 2, 3)])).toBe(0);
+  });
+
+  it("wraps a bbox with xmin past xmax across the antimeridian", () => {
+    const fiji = box(177, -178);
+    expect(overlappingBoxes([fiji, box(179, 180)])).toBe(2);
+    expect(overlappingBoxes([fiji, box(-179, -178.5)])).toBe(2);
+    expect(overlappingBoxes([fiji, box(0, 10)])).toBe(0);
+  });
+
+  it("knows which CRSs are longitude/latitude", () => {
+    expect(isLonLat(nativeCrs(undefined, []))).toBe(true);
+    expect(isLonLat(nativeCrs("EPSG:4326", []))).toBe(true);
+    expect(isLonLat(nativeCrs("EPSG:3857", []))).toBe(false);
+    expect(isLonLat(nativeCrs("srid:0", []))).toBe(false);
+  });
+
+  it("gives the bundled places example one bbox per city, none overlapping", async () => {
+    const [column] = (await loadFixture("public/places.parquet")).model.geo?.columns ?? [];
+    expect(column?.rowGroups).toHaveLength(15);
+    expect(column?.rowGroups.every((g) => g?.source === "statistics")).toBe(true);
+    expect(overlappingBoxes(column?.rowGroups.map((g) => g?.bbox ?? null) ?? [])).toBe(0);
   });
 });

@@ -36,6 +36,14 @@ test("selecting a column shows its per-row-group ranges", async ({ page }) => {
   await expect(page.locator("[aria-expanded=true]")).toContainText("250,000–299,999");
 });
 
+test("a geometry column shows each row group's bbox", async ({ page }) => {
+  await page.goto("/?url=places.parquet");
+  await page.getByRole("button", { name: /^Column geometry,/ }).click();
+  await expect(page.getByText("bboxes don't overlap: spatial filters skip row groups")).toBeVisible();
+  await expect(page.getByText("OGC:CRS84")).toBeVisible();
+  await expect(page.getByTitle("Open row_group[0]")).toContainText("-119.0 to -117.6");
+});
+
 test("restores a shared link", async ({ page }) => {
   await openSensors(page, "&rg=3&col=city");
   await expect(page.locator("[aria-expanded=true]")).toContainText("150,000–199,999");

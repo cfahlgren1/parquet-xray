@@ -79,6 +79,7 @@ export interface GeoModel {
 }
 
 const DEFAULT_CRS: Crs = { kind: "default", label: "OGC:CRS84" };
+const LON_LAT_CODES = new Set(["OGC:CRS84", "EPSG:4326", "EPSG:4979", "OGC:CRS83", "EPSG:4269", "srid:4326"]);
 const WKB_TYPES = [
   "Geometry",
   "Point",
@@ -124,6 +125,10 @@ export function readGeo(metadata: FileMetaData, leaves: Leaf[]): GeoModel | null
     if (native && keyCrs && !sameCrs(crs, keyCrs)) {
       issues.push(`"${name}" is ${crs.label} in its ${native.type} type but ${keyCrs.label} in the geo key`);
     }
+    const rowGroups = metadata.row_groups.map((_, rg) => rowGroupGeo(name, metadata, leaves, rg, leaf, meta, issues));
+    if (isLonLat(crs) && rowGroups.some((g) => g && !inLonLatRange(g.bbox))) {
+      issues.push(`"${name}" has row group bboxes outside longitude/latitude range, so its statistics look wrong`);
+    }
     return {
       name,
       leaf: leaf >= 0 ? leaf : null,
@@ -133,7 +138,7 @@ export function readGeo(metadata: FileMetaData, leaves: Leaf[]): GeoModel | null
       primary: geo?.primary_column === name,
       crs,
       edges,
-      rowGroups: metadata.row_groups.map((_, rg) => rowGroupGeo(name, metadata, leaves, rg, leaf, meta, issues)),
+      rowGroups,
       bbox: meta?.bbox === undefined ? null : geoKeyBbox(name, meta.bbox, issues),
     };
   });
@@ -152,6 +157,42 @@ export function nativeCrs(crs: string | undefined, kv: KeyValue[]): Crs {
   }
   if (crs.trimStart().startsWith("{")) return projjsonCrs(crs) ?? { kind: "code", label: crs };
   return { kind: "code", label: crs };
+}
+
+/** Whether x and y are longitude and latitude. Parquet stores longitude first, whatever the CRS's axis order. */
+export function isLonLat(crs: Crs): boolean {
+  if (crs.kind === "default" || LON_LAT_CODES.has(crs.label)) return true;
+  return /^Geographic(2D|3D)?CRS$/.test(String(crs.projjson?.type));
+}
+
+/**
+ * How many row group bboxes overlap at least one other, which a spatial filter can't tell apart.
+ * A bbox whose xmin is past its xmax wraps across the antimeridian. Touching counts as overlapping.
+ */
+export function overlappingBoxes(boxes: (BoundingBox | null)[]): number {
+  // Sweep along x: a wrapping bbox covers everything from xmin up and everything up to xmax.
+  const spans = boxes
+    .flatMap((b, i) => {
+      if (!b) return [];
+      const xs =
+        b.xmin <= b.xmax
+          ? [[b.xmin, b.xmax]]
+          : [
+              [-Infinity, b.xmax],
+              [b.xmin, Infinity],
+            ];
+      return xs.map(([lo = 0, hi = 0]) => ({ i, lo, hi, b }));
+    })
+    .sort((a, b) => a.lo - b.lo);
+  const overlapping = new Set<number>();
+  for (const [s, a] of spans.entries()) {
+    for (let t = s + 1; t < spans.length; t++) {
+      const b = spans[t];
+      if (!b || b.lo > a.hi) break;
+      if (a.i !== b.i && a.b.ymin <= b.b.ymax && b.b.ymin <= a.b.ymax) overlapping.add(a.i).add(b.i);
+    }
+  }
+  return overlapping.size;
 }
 
 /** `Point`, `MultiPolygon Z`, `LineString ZM` for a WKB geometry type code. */
@@ -292,6 +333,12 @@ function geoKeyBbox(name: string, bbox: unknown, issues: string[]): BoundingBox 
     return null;
   }
   return { xmin, ymin, xmax, ymax } as BoundingBox;
+}
+
+function inLonLatRange(b: BoundingBox): boolean {
+  const lon = (x: number) => x >= -180 && x <= 180;
+  const lat = (y: number) => y >= -90 && y <= 90;
+  return lon(b.xmin) && lon(b.xmax) && lat(b.ymin) && lat(b.ymax);
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
